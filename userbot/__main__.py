@@ -58,10 +58,10 @@ for name in files:
             os.remove(Path(f"userbot/plugins/{shortname}.py"))
             LOGS.info(f"unable to load {shortname} because of error {e}")
 
-LOGS.info("Yukki spam userbot is officially working.!!!")
+LOGS.info("Indian spam userbot is officially working.!!!")
 LOGS.info(
     "Congratulation, now type .ping to see message if bot is live\
-    \nIf you need assistance, head to https://t.me/OfficialYukki"
+    \nIf you need assistance, head to https://t.me/indian_opp"
 )
 
 
@@ -72,7 +72,7 @@ async def startupmessage():
             await bot.send_message(
                 Config.PRIVATE_GROUP_BOT_API_ID,
                 "**Congratulation, now type .ping to see message if bot is live\
-        \nIf you need assistance, **head to https://t.me/OfficialYukki",
+        \nIf you need assistance, **head to https://t.me/indian_opp",
                 link_preview=False,
             )
     except Exception as e:
