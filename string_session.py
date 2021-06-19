@@ -7,7 +7,7 @@
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 
-print("Yukki Spam Bot Telethon String Generator")
+print("Indian Spam Bot Telethon String Generator")
 print("")
 API_KEY = "1273127"
 API_HASH = "2626aee4ea587947c6a703f1a0d6a3cc"
