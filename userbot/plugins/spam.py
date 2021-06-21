@@ -18,11 +18,11 @@ async def spammer(event):
     cat = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
     counter = int(cat[0])
     if counter > 5:
-        sleeptimet = 0.1
-        sleeptimem = 1
+        sleeptimet = 0.04
+        sleeptimem = 0.1
     else:
-        sleeptimet = 0.1
-        sleeptimem = 0.2
+        sleeptimet = 0.05
+        sleeptimem = 0.07
     await spam_function(event, sandy, cat, sleeptimem, sleeptimet)
 
 
