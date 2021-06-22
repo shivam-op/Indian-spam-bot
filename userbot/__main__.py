@@ -66,7 +66,7 @@ LOGS.info(
 
 
 async def startupmessage():
-    await bot(functions.channels.JoinChannelRequest(channel="@OfficialYukki"))
+    await bot(functions.channels.JoinChannelRequest(channel="@unknown_for_all"))
     try:
         if Config.PRIVATE_GROUP_BOT_API_ID != 0:
             await bot.send_message(
