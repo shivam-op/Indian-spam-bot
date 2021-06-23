@@ -13,7 +13,7 @@ async def _(event):
     event = await edit_or_reply(event, "Pong!")
     end = datetime.now()
     ms = (end - start).microseconds / 1000
-    await event.edit(f"🤖 𝗣𝗼𝗻𝗴!\n`{ms} 𝗺𝘀`\n𝗠𝗮𝘀𝘁𝗲𝗿: {mention}")
+    await event.edit(f"🤖 𝗣𝗼𝗻𝗴!\n`{ms} 𝗺𝘀`\n𝗠𝗮𝘀𝘁𝗲𝗿: {mention} 𓆩𝗢𝗣ꔪ𝗦𝗣𝗔𝗠𝗠𝗘𝗥𓆪 ᭄☯࿐ ")
 
 
 @bot.on(admin_cmd(pattern=f"fping$", outgoing=True))
@@ -22,7 +22,7 @@ async def _(event):
     if event.fwd_from:
         return
     start = datetime.now()
-    animation_interval = 0.2
+    animation_interval = 0.1
     animation_ttl = range(26)
     event = await edit_or_reply(event, "ping....")
     animation_chars = [
