@@ -70,9 +70,9 @@ async def get_users(event):
     sender = await event.get_sender()
     me = await event.client.get_me()
     if not sender.id == me.id:
-        indian-spam-bot = await edit_or_reply(event, "`processing...`")
+        userbot = await edit_or_reply(event, "`processing...`")
     else:
-        indian-spam-bot = await edit_or_reply(event, "`processing...`")
+        userbot = await edit_or_reply(event, "`processing...`")
     kraken = await get_chatinfo(event)
     chat = await event.get_chat()
     if event.is_private:
