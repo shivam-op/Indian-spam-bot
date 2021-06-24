@@ -51,13 +51,11 @@ def load_module(shortname):
         mod = importlib.util.module_from_spec(spec)
         mod.bot = bot
         mod.tgbot = bot.tgbot
-        mod.Var = Var
         mod.command = command
         mod.logger = logging.getLogger(shortname)
         # support for uniborg
         sys.modules["uniborg.util"] = userbot.utils
         mod.Config = Config
-        mod.borg = bot
         mod.edit_or_reply = edit_or_reply
         mod.edit_delete = edit_delete
         # support for paperplaneextended
