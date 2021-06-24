@@ -13,7 +13,7 @@ NO Requirement of API ID and API HASH ( SPAM MAY BE SLOW )
    - Generate on Repl [![Run on Repl.it](https://repl.it/badge/github/YukkiBot/YukkiSpamBot)](https://replit.com/@unknownforall1/INDIAN-OP-SPAM-BOT#main.py)
    - Termux : `sh -c "$(curl -fsSL https://da.gd/YukkiBot)"` (Use `python string_session.py` next time to generate another string.)
 
-REQUIREMENT OF APP ID AND  API HASH (SPAM OP & ID BAN CHANCE BE LIST )
+REQUIREMENT OF APP ID AND  API HASH (SPAM OP & ID BAN CHANCE WILL BE REDUCED)
 
   - GENERATE ON REPL [![Run on Repl.it](https://repl.it/badge/github/YukkiBot/YukkiSpamBot)](https://replit.com/@unknownforall1/INDIAN-OP-SPAM-BOT-API-HAS-APP-ID-NEEDED#main.py)
 
