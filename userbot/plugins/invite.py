@@ -17,7 +17,7 @@ from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.messages import GetFullChatRequest
 
 from userbot import CMD_HELP
-from indian-spam-bot.utils import admin_cmd, edit_or_reply, sudo_cmd
+from userbot.utils import admin_cmd, edit_or_reply, sudo_cmd
 from userbot.cmdhelp import CmdHelp
 
 async def get_chatinfo(event):
@@ -76,29 +76,29 @@ async def get_users(event):
     kraken = await get_chatinfo(event)
     chat = await event.get_chat()
     if event.is_private:
-        return await mafia.edit("`Sorry, Cant kidnape users here`")
+        return await userbot.edit("`Sorry, Cant kidnape users here`")
     s = 0
     f = 0
     error = "None"
 
-    await indian-spam-bot.edit("**TerminalStatus**\n\n`kidnapeing Users.......`")
+    await userbot.edit("**TerminalStatus**\n\n`kidnapeing Users.......`")
     async for user in event.client.iter_participants(kraken.full_chat.id):
         try:
             if error.startswith("Too"):
-                return await indian-spam-bot.edit(
+                return await userbot.edit(
                     f"**Terminal Finished With Error**\n(`May Got Limit Error from telethon Please try agin Later`)\n**Error** : \n`{error}`\n\n• kidnaped `{s}` people \n• Failed to kidnape `{f}` people"
                 )
             await event.client(
                 functions.channels.InviteToChannelRequest(channel=chat, users=[user.id])
             )
             s = s + 1
-            await indian-spam-bot.edit(
+            await userbot.edit(
                 f"**Terminal Running...**\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people\n\n**× LastError:** `{error}`"
             )
         except Exception as e:
             error = str(e)
             f = f + 1
-    return await indian-spam-bot.edit(
+    return await userbot.edit(
         f"**Terminal Finished** \n\n• Successfully kidnaped `{s}` people \n• failed to kidnape `{f}` people"
     )
 
