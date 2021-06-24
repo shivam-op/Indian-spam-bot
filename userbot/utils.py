@@ -4,6 +4,7 @@ import importlib
 import inspect
 import logging
 import math
+import os
 import re
 import sys
 import time
@@ -15,15 +16,26 @@ from telethon import events
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 
-from . import CMD_HELP, CMD_LIST, LOAD_PLUG, LOGS, SUDO_LIST, bot
-from .Config import Config
-from .helpers.progress import CancelProcess
+from var import Var
+
+from userbot import CMD_LIST, LOAD_PLUG, LOGS, SUDO_LIST, bot
+from userbot.helpers.exceptions import CancelProcess
+
+ENV = bool(os.environ.get("ENV", False))
+if ENV:
+    from userbot.uniborgConfig import Config
+else:
+    if os.path.exists("config.py"):
+        from config import Development as Config
+
 
 
 def load_module(shortname):
     if shortname.startswith("__"):
         pass
     elif shortname.endswith("_"):
+        import userbot.utils
+
         path = Path(f"userbot/plugins/{shortname}.py")
         name = "userbot.plugins.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
@@ -33,34 +45,21 @@ def load_module(shortname):
     else:
         import userbot.utils
 
-        from .helpers.tools import media_type
-        from .helpers.utils import _cattools, _catutils, _format, install_pip, reply_id
-        from .managers import edit_delete, edit_or_reply
-
         path = Path(f"userbot/plugins/{shortname}.py")
         name = "userbot.plugins.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
         mod = importlib.util.module_from_spec(spec)
         mod.bot = bot
-        mod.LOGS = LOGS
-        mod.Config = Config
-        mod._format = _format
         mod.tgbot = bot.tgbot
-        mod.sudo_cmd = sudo_cmd
-        mod.CMD_HELP = CMD_HELP
-        mod.reply_id = reply_id
-        mod.admin_cmd = admin_cmd
-        mod._catutils = _catutils
-        mod._cattools = _cattools
-        mod.media_type = media_type
-        mod.edit_delete = edit_delete
-        mod.install_pip = install_pip
-        mod.parse_pre = _format.parse_pre
-        mod.edit_or_reply = edit_or_reply
+        mod.Var = Var
+        mod.command = command
         mod.logger = logging.getLogger(shortname)
         # support for uniborg
         sys.modules["uniborg.util"] = userbot.utils
+        mod.Config = Config
         mod.borg = bot
+        mod.edit_or_reply = edit_or_reply
+        mod.edit_delete = edit_delete
         # support for paperplaneextended
         sys.modules["userbot.events"] = userbot.utils
         spec.loader.exec_module(mod)
@@ -140,11 +139,12 @@ def admin_cmd(pattern=None, command=None, **args):
     # add blacklist chats, UB should not respond in these chats
     args["blacklist_chats"] = True
     black_list_chats = list(Config.UB_BLACK_LIST_CHAT)
-    if black_list_chats:
+    if len(black_list_chats) > 0:
         args["chats"] = black_list_chats
 
     # add blacklist chats, UB should not respond in these chats
     if "allow_edited_updates" in args and args["allow_edited_updates"]:
+        args["allow_edited_updates"]
         del args["allow_edited_updates"]
 
     # check if the plugin should listen for outgoing 'messages'
@@ -206,24 +206,89 @@ def sudo_cmd(pattern=None, command=None, **args):
         args["chats"] = black_list_chats
     # add blacklist chats, UB should not respond in these chats
     if "allow_edited_updates" in args and args["allow_edited_updates"]:
+        args["allow_edited_updates"]
         del args["allow_edited_updates"]
     # check if the plugin should listen for outgoing 'messages'
     return events.NewMessage(**args)
 
 
+# https://t.me/c/1220993104/623253
+# https://docs.telethon.dev/en/latest/misc/changelog.html#breaking-changes
+async def edit_or_reply(event, text, parse_mode=None, link_preview=None):
+    link_preview = link_preview or False
+    parse_mode = parse_mode or "md"
+    if event.sender_id in Config.SUDO_USERS:
+        reply_to = await event.get_reply_message()
+        if reply_to:
+            return await reply_to.reply(
+                text, parse_mode=parse_mode, link_preview=link_preview
+            )
+        return await event.reply(text, parse_mode=parse_mode, link_preview=link_preview)
+    return await event.edit(text, parse_mode=parse_mode, link_preview=link_preview)
+
+
+# from paperplaneextended
+on = bot.on
+
+
+def on(**args):
+    def decorator(func):
+        async def wrapper(event):
+            # do things like check if sudo
+            await func(event)
+
+        client.add_event_handler(wrapper, events.NewMessage(**args))
+        return wrapper
+
+    return decorater
+
+
+async def edit_delete(event, text, time=None, parse_mode=None, link_preview=None):
+    parse_mode = parse_mode or "md"
+    link_preview = link_preview or False
+    time = time or 5
+    if event.sender_id in Config.SUDO_USERS:
+        reply_to = await event.get_reply_message()
+        catevent = (
+            await reply_to.reply(text, link_preview=link_preview, parse_mode=parse_mode)
+            if reply_to
+            else await event.reply(
+                text, link_preview=link_preview, parse_mode=parse_mode
+            )
+        )
+    else:
+        catevent = await event.edit(
+            text, link_preview=link_preview, parse_mode=parse_mode
+        )
+    await asyncio.sleep(time)
+    return await catevent.delete()
+
+ 
 def errors_handler(func):
     async def wrapper(errors):
         try:
             await func(errors)
         except BaseException:
-            if Config.PRIVATE_GROUP_BOT_API_ID != 0:
-                return
+
             date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-            ftext = "\nDisclaimer:\nThis file is pasted only here ONLY here,"
+            new = {
+                'error': str(sys.exc_info()[1]),
+                'date': datetime.datetime.now()
+            }
+
+            text = "**USERBOT CRASH REPORT**\n\n"
+
+            link = "[here](https://t.me/sn12384)"
+            text += "If you wanna you can report it"
+            text += f"- just forward this message {link}.\n"
+            text += "Nothing is logged except the fact of error and date\n"
+
+            ftext = "\nDisclaimer:\nThis file uploaded ONLY here,"
             ftext += "\nwe logged only fact of error and date,"
             ftext += "\nwe respect your privacy,"
             ftext += "\nyou may not report this error if you've"
             ftext += "\nany confidential data here, no one will see your data\n\n"
+
             ftext += "--------BEGIN USERBOT TRACEBACK LOG--------"
             ftext += "\nDate: " + date
             ftext += "\nGroup ID: " + str(errors.chat_id)
@@ -234,31 +299,21 @@ def errors_handler(func):
             ftext += str(traceback.format_exc())
             ftext += "\n\nError text:\n"
             ftext += str(sys.exc_info()[1])
-            new = {"error": str(sys.exc_info()[1]), "date": datetime.datetime.now()}
             ftext += "\n\n--------END USERBOT TRACEBACK LOG--------"
 
-            command = 'git log --pretty=format:"%an: %s" -5'
+            command = "git log --pretty=format:\"%an: %s\" -5"
 
             ftext += "\n\n\nLast 5 commits:\n"
 
             process = await asyncio.create_subprocess_shell(
-                command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
+                command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE)
             stdout, stderr = await process.communicate()
-            result = str(stdout.decode().strip()) + str(stderr.decode().strip())
-            ftext += result
-            from .helpers.utils import _format
+            result = str(stdout.decode().strip()) \
+                + str(stderr.decode().strip())
 
-            pastelink = _format.paste_text(ftext)
-            text = "**CatUserbot Error report**\n\n"
-            link = "[here](https://t.me/catuserbot_support)"
-            text += "If you wanna you can report it"
-            text += f"- just forward this message {link}.\n"
-            text += "Nothing is logged except the fact of error and date\n\n"
-            text += f"**Error report : ** [{new['error']}]({pastelink})"
-            await errors.client.send_message(
-                Config.PRIVATE_GROUP_BOT_API_ID, text, link_preview=False
-            )
+            ftext += result
 
     return wrapper
 
@@ -278,11 +333,10 @@ async def progress(
         time_to_completion = round((total - current) / speed) * 1000
         estimated_total_time = elapsed_time + time_to_completion
         progress_str = "[{0}{1}] {2}%\n".format(
-            "".join("▰" for i in range(math.floor(percentage / 10))),
-            "".join("▱" for i in range(10 - math.floor(percentage / 10))),
+            "".join(["▰" for i in range(math.floor(percentage / 10))]),
+            "".join(["▱" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2),
         )
-
         tmp = progress_str + "{0} of {1}\nETA: {2}".format(
             humanbytes(current), humanbytes(total), time_formatter(estimated_total_time)
         )
@@ -345,7 +399,7 @@ def time_formatter(milliseconds: int) -> str:
 
 class Loader:
     def __init__(self, func=None, **args):
-        self.Config = Config
+        self.Var = Var
         bot.add_event_handler(func, events.NewMessage(**args))
 
 
@@ -360,8 +414,7 @@ async def is_admin(client, chat_id, user_id):
             chat_participant, (ChannelParticipantCreator, ChannelParticipantAdmin)
         ):
             return True
-    except Exception as e:
-        LOGS.info(str(e))
+    except Exception:
         return False
     else:
         return False
