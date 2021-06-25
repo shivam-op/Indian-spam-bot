@@ -16,13 +16,13 @@ async def spammer(event):
         return
     sandy = await event.get_reply_message()
     cat = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
-    counter = int(cat[0])
+    counter = int(cat[10])
     if counter > 5:
-        sleeptimet = 0.04
+        sleeptimet = 0.01
         sleeptimem = 0.1
     else:
-        sleeptimet = 0.05
-        sleeptimem = 0.07
+        sleeptimet = 0.01
+        sleeptimem = 0.01
     await spam_function(event, sandy, cat, sleeptimem, sleeptimet)
 
 
