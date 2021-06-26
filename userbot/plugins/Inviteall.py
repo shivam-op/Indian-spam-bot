@@ -61,35 +61,35 @@ async def get_users(event):
     sender = await event.get_sender()
     me = await event.client.get_me()
     if not sender.id == me.id:
-        userbot = await edit_or_reply(event, "`processing...`")
+        deadly = await edit_or_reply(event, "`processing...`")
     else:
-        userbot = await edit_or_reply(event, "`processing...`")
+        deadly = await edit_or_reply(event, "`processing...`")
     kraken = await get_chatinfo(event)
     chat = await event.get_chat()
     if event.is_private:
-        return await userbot.edit("`Sorry, Cant add users here`")
+        return await deadly.edit("`Sorry, Cant add users here`")
     s = 0
     f = 0
     error = "None"
 
-    await userbot.edit("**TerminalStatus**\n\n`Collecting Users.......`")
+    await deadly.edit("**TerminalStatus**\n\n`Collecting Users.......`")
     async for user in event.client.iter_participants(kraken.full_chat.id):
         try:
             if error.startswith("Too"):
-                return await userbot.edit(
+                return await deadly.edit(
                     f"**Tᴇʀᴍɪɴᴀʟ Fɪɴɪsʜᴇᴅ Wɪᴛʜ Eʀʀᴏʀ Bᴄᴏᴢ Aᴀᴘᴋᴀ Aᴄᴄᴏᴜɴᴛ Lɪᴍɪᴛᴇᴅ Hᴇ\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people"
                 )
             await event.client(
                 functions.channels.InviteToChannelRequest(channel=chat, users=[user.id])
             )
             s = s + 1
-            await userbot.edit(
+            await deadly.edit(
                 f"**Terminal Running...**\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people\n\n**× LastError:** `{error}`"
             )
         except Exception as e:
             error = str(e)
             f = f + 1
-    return await userbot.edit(
+    return await deadly.edit(
         f"**Terminal Finished** \n\n• Successfully Invited `{s}` people \n• failed to invite `{f}` people"
     )
 
