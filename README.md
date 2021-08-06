@@ -5,8 +5,8 @@
 </p>
 
 ## 🚀 Deploy on Heroku 
-<a href="
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/shivam-op/winzo-vc-bot)  
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/shivam-op/Indian-spam-bot)  
 
 ## String Session
 
